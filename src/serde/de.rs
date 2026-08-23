@@ -491,7 +491,7 @@ macro_rules! deserialize_integer_key {
         where
             V: de::Visitor<'de>,
         {
-            visitor.$visit(stry!(match unsafe { self.de.next_() } {
+            visitor.$visit(stry!(match stry!(self.de.next()) {
                 Node::String(s) => s
                     .parse::<$type>()
                     .map_err(|_| Deserializer::error(ErrorType::InvalidNumber)),
