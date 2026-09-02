@@ -1277,6 +1277,7 @@ pub(crate) use stry;
 
 #[cfg(test)]
 mod test {
+    use alloc::vec;
     use crate::prelude::*;
     use crate::{BorrowedValue, OwnedValue};
 

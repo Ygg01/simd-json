@@ -1,9 +1,12 @@
 mod pp;
+
+use alloc::string::String;
+use alloc::vec::Vec;
+use core::fmt::Write;
 use crate::{Error, ErrorType};
 pub use pp::*;
 use serde_ext::ser;
-use std::io::Write;
-use std::str;
+
 use value_trait::generator::BaseGenerator;
 
 macro_rules! iomap {
@@ -61,7 +64,7 @@ where
         &mut self.0
     }
     #[cfg_attr(not(feature = "no-inline"), inline)]
-    fn write_min(&mut self, _slice: &[u8], min: u8) -> std::io::Result<()> {
+    fn write_min(&mut self, _slice: &[u8], min: u8) -> SimdResult<()> {
         self.0.write_all(&[min])
     }
 }

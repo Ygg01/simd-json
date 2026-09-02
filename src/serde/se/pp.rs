@@ -1,10 +1,14 @@
+use alloc::string::{String, ToString};
+use alloc::vec::Vec;
 use crate::{Error, ErrorType, macros::stry};
 use serde_ext::ser;
-use std::io::Write;
-use std::str;
+use core::fmt::Write;
+use core::str;
 use value_trait::generator::BaseGenerator;
 
 use super::key_must_be_a_string;
+
+type SimdResult<T> = Result<T, Error>;
 
 macro_rules! iomap {
     ($e:expr_2021) => {
@@ -16,7 +20,7 @@ macro_rules! iomap {
 /// # Errors
 /// when the data can not be written
 #[cfg_attr(not(feature = "no-inline"), inline)]
-pub fn to_vec_pretty<T>(to: &T) -> crate::Result<Vec<u8>>
+pub fn to_vec_pretty<T>(to: &T) -> SimdResult<Vec<u8>>
 where
     T: ser::Serialize + ?Sized,
 {
@@ -73,7 +77,7 @@ where
         self.writer.write_all(&[min])
     }
     #[cfg_attr(not(feature = "no-inline"), inline)]
-    fn new_line(&mut self) -> std::io::Result<()> {
+    fn new_line(&mut self) -> SimdResult<()> {
         self.write_char(b'\n').and_then(|()| match self.dent {
             0 => Ok(()),
             1 => self.get_writer().write_all(b"  "),
@@ -887,6 +891,8 @@ where
 #[cfg(test)]
 mod test {
     #![allow(clippy::ignored_unit_patterns, unused_imports)]
+
+    use alloc::string::String;
     use crate::OwnedValue as Value;
     #[cfg(not(target_arch = "wasm32"))]
     use crate::StaticNode;
@@ -908,7 +914,7 @@ mod test {
 
     #[test]
     fn numerical_map_serde() {
-        use std::collections::HashMap;
+        use hashbrown::HashMap;
 
         #[derive(Clone, Debug, PartialEq, serde::Serialize)]
         struct Foo {

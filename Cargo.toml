@@ -13,6 +13,8 @@ rust-version = "1.88"
 
 [dependencies]
 simdutf8 = { version = "0.1.4", features = ["public_imp", "aarch64_neon"] }
+core_detect = "1.0.0"
+hashbrown = "0.17.1"
 
 value-trait = { version = "0.12" }
 beef = { version = "0.5", optional = true }

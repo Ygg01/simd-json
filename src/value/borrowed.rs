@@ -24,13 +24,16 @@ mod cmp;
 mod from;
 mod serialize;
 
+use alloc::boxed::Box;
+use alloc::string::ToString;
+use alloc::vec::Vec;
 use super::ObjectHasher;
 use crate::{Buffers, prelude::*};
 use crate::{Deserializer, Node, Result};
 use crate::{cow::Cow, safer_unchecked::GetSaferUnchecked as _};
 use halfbrown::HashMap;
-use std::fmt;
-use std::ops::{Index, IndexMut};
+use core::fmt;
+use core::ops::{Index, IndexMut};
 
 /// Representation of a JSON object
 pub type Object<'value> = HashMap<Cow<'value, str>, Value<'value>, ObjectHasher>;
@@ -111,7 +114,7 @@ impl<'value> Value<'value> {
             // value will produce a owned value again see:
             // https://docs.rs/beef/0.4.4/src/beef/generic.rs.html#379-391
             Self::String(s) => unsafe {
-                std::mem::transmute::<Value<'value>, Value<'static>>(Self::String(Cow::from(
+                core::mem::transmute::<Value<'value>, Value<'static>>(Self::String(Cow::from(
                     s.into_owned(),
                 )))
             },
@@ -141,7 +144,7 @@ impl<'value> Value<'value> {
             // value will produce a owned value again see:
             // https://docs.rs/beef/0.4.4/src/beef/generic.rs.html#379-391
             Self::String(s) => unsafe {
-                std::mem::transmute::<Value<'value>, Value<'static>>(Self::String(Cow::from(
+                core::mem::transmute::<Value<'value>, Value<'static>>(Self::String(Cow::from(
                     s.to_string(),
                 )))
             },
@@ -270,7 +273,7 @@ impl ValueAsScalar for Value<'_> {
 
     #[cfg_attr(not(feature = "no-inline"), inline)]
     fn as_str(&self) -> Option<&str> {
-        use std::borrow::Borrow;
+        use alloc::borrow::Borrow;
         match self {
             Self::String(s) => Some(s.borrow()),
             _ => None,
@@ -504,6 +507,9 @@ impl<'tape, 'de> BorrowSliceDeserializer<'tape, 'de> {
 mod test {
     #![allow(clippy::ignored_unit_patterns)]
     #![allow(clippy::cognitive_complexity)]
+
+    use alloc::format;
+use alloc::vec;
     use super::*;
 
     #[test]

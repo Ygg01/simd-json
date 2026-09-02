@@ -1,7 +1,6 @@
-use std::{
-    borrow::{Borrow, Cow},
+use core::{
+    borrow::{Borrow},
     hash::Hash,
-    io::{self, Write},
 };
 
 use value_trait::{
