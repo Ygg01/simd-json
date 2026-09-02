@@ -1,6 +1,6 @@
 use alloc::string::{String, ToString};
 use alloc::vec::Vec;
-use crate::{Error, ErrorType, macros::stry};
+use crate::{macros::stry, Error, ErrorType, SJsonResult};
 use serde_ext::ser;
 use core::fmt::Write;
 use core::str;
@@ -8,7 +8,7 @@ use value_trait::generator::BaseGenerator;
 
 use super::key_must_be_a_string;
 
-type SimdResult<T> = Result<T, Error>;
+
 
 macro_rules! iomap {
     ($e:expr_2021) => {
@@ -20,7 +20,7 @@ macro_rules! iomap {
 /// # Errors
 /// when the data can not be written
 #[cfg_attr(not(feature = "no-inline"), inline)]
-pub fn to_vec_pretty<T>(to: &T) -> SimdResult<Vec<u8>>
+pub fn to_vec_pretty<T>(to: &T) -> SJsonResult<Vec<u8>>
 where
     T: ser::Serialize + ?Sized,
 {
@@ -34,7 +34,7 @@ where
 /// # Errors
 /// when the data can not be written
 #[cfg_attr(not(feature = "no-inline"), inline)]
-pub fn to_string_pretty<T>(to: &T) -> crate::Result<String>
+pub fn to_string_pretty<T>(to: &T) -> SJsonResult<String>
 where
     T: ser::Serialize + ?Sized,
 {
@@ -45,7 +45,7 @@ where
 /// # Errors
 /// when the data can not be written
 #[cfg_attr(not(feature = "no-inline"), inline)]
-pub fn to_writer_pretty<T, W>(writer: W, to: &T) -> crate::Result<()>
+pub fn to_writer_pretty<T, W>(writer: W, to: &T) -> SJsonResult<()>
 where
     T: ser::Serialize + ?Sized,
     W: Write,
@@ -77,7 +77,7 @@ where
         self.writer.write_all(&[min])
     }
     #[cfg_attr(not(feature = "no-inline"), inline)]
-    fn new_line(&mut self) -> SimdResult<()> {
+    fn new_line(&mut self) -> SJsonResult<()> {
         self.write_char(b'\n').and_then(|()| match self.dent {
             0 => Ok(()),
             1 => self.get_writer().write_all(b"  "),
@@ -893,6 +893,7 @@ mod test {
     #![allow(clippy::ignored_unit_patterns, unused_imports)]
 
     use alloc::string::String;
+    use alloc::vec;
     use crate::OwnedValue as Value;
     #[cfg(not(target_arch = "wasm32"))]
     use crate::StaticNode;
@@ -1016,7 +1017,7 @@ mod test {
         #[test]
         fn prop_json_encode_decode(val in arb_json_value()) {
             let mut encoded = crate::to_vec_pretty(&val).expect("to_vec_pretty");
-            println!("{}", String::from_utf8_lossy(&encoded.clone()));
+            // println!("{}", String::from_utf8_lossy(&encoded.clone()));
             let res: Value = crate::from_slice(encoded.as_mut_slice()).expect("can't convert");
             assert_eq!(val, res);
         }
@@ -1034,13 +1035,13 @@ mod test {
         let mut res = match crate::to_vec_pretty(&v) {
             Ok(res) => res,
             Err(e) => {
-                println!("prettify: {e}");
+                // println!("prettify: {e}");
                 assert_eq!(v, "snot");
                 vec![]
             }
         };
         let s = unsafe { String::from_utf8_unchecked(res.clone()) };
-        println!("{s}");
+        // println!("{s}");
         let v2: Value = from_slice(&mut res).expect("generated bad json");
         assert_eq!(v, v2);
     }

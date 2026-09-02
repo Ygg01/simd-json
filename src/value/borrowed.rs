@@ -29,7 +29,7 @@ use alloc::string::ToString;
 use alloc::vec::Vec;
 use super::ObjectHasher;
 use crate::{Buffers, prelude::*};
-use crate::{Deserializer, Node, Result};
+use crate::{Deserializer, Node, SJsonResult};
 use crate::{cow::Cow, safer_unchecked::GetSaferUnchecked as _};
 use halfbrown::HashMap;
 use core::fmt;
@@ -49,7 +49,7 @@ pub type Array<'value> = Vec<Value<'value>>;
 /// # Errors
 ///
 /// Will return `Err` if `s` is invalid JSON.
-pub fn to_value(s: &mut [u8]) -> Result<Value<'_>> {
+pub fn to_value(s: &mut [u8]) -> SJsonResult<Value<'_>> {
     match Deserializer::from_slice(s) {
         Ok(de) => Ok(BorrowDeserializer::from_deserializer(de).parse()),
         Err(e) => Err(e),
@@ -70,7 +70,7 @@ pub fn to_value(s: &mut [u8]) -> Result<Value<'_>> {
 pub fn to_value_with_buffers<'value>(
     s: &'value mut [u8],
     buffers: &mut Buffers,
-) -> Result<Value<'value>> {
+) -> SJsonResult<Value<'value>> {
     match Deserializer::from_slice_with_buffers(s, buffers) {
         Ok(de) => Ok(BorrowDeserializer::from_deserializer(de).parse()),
         Err(e) => Err(e),

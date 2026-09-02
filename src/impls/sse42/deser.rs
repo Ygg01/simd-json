@@ -5,7 +5,7 @@ use core::arch::x86 as arch;
 use core::arch::x86_64 as arch;
 
 use crate::{
-    Deserializer, Result, SillyWrapper,
+    Deserializer, SJsonResult, SillyWrapper,
     error::ErrorType,
     safer_unchecked::GetSaferUnchecked,
     stringparse::{ESCAPE_MAP, handle_unicode_codepoint},
@@ -22,7 +22,7 @@ pub(crate) unsafe fn parse_str<'invoke, 'de>(
     data: &'invoke [u8],
     buffer: &'invoke mut [u8],
     mut idx: usize,
-) -> Result<&'de str> {
+) -> SJsonResult<&'de str> {
     unsafe {
         use ErrorType::{InvalidEscape, InvalidUnicodeCodepoint};
         let input = input.input;

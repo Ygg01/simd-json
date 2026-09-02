@@ -3,7 +3,7 @@ mod pp;
 use alloc::string::String;
 use alloc::vec::Vec;
 use core::fmt::Write;
-use crate::{Error, ErrorType};
+use crate::{Error, ErrorType, SJsonResult};
 pub use pp::*;
 use serde_ext::ser;
 
@@ -19,7 +19,7 @@ macro_rules! iomap {
 /// # Errors
 /// when the data can not be written
 #[cfg_attr(not(feature = "no-inline"), inline)]
-pub fn to_vec<T>(to: &T) -> crate::Result<Vec<u8>>
+pub fn to_vec<T>(to: &T) -> SJsonResult<Vec<u8>>
 where
     T: ser::Serialize + ?Sized,
 {
@@ -33,7 +33,7 @@ where
 /// # Errors
 /// when the data can not be written
 #[cfg_attr(not(feature = "no-inline"), inline)]
-pub fn to_string<T>(to: &T) -> crate::Result<String>
+pub fn to_string<T>(to: &T) -> SJsonResult<String>
 where
     T: ser::Serialize + ?Sized,
 {
@@ -44,7 +44,7 @@ where
 /// # Errors
 /// when the data can not be written
 #[cfg_attr(not(feature = "no-inline"), inline)]
-pub fn to_writer<T, W>(writer: W, to: &T) -> crate::Result<()>
+pub fn to_writer<T, W>(writer: W, to: &T) -> SJsonResult<()>
 where
     T: ser::Serialize + ?Sized,
     W: Write,
@@ -64,7 +64,7 @@ where
         &mut self.0
     }
     #[cfg_attr(not(feature = "no-inline"), inline)]
-    fn write_min(&mut self, _slice: &[u8], min: u8) -> SimdResult<()> {
+    fn write_min(&mut self, _slice: &[u8], min: u8) -> SJsonResult<()> {
         self.0.write_all(&[min])
     }
 }

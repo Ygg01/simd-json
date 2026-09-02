@@ -83,7 +83,8 @@ pub use crate::value::*;
 pub use value_trait::ValueType;
 
 /// simd-json Result type
-pub type Result<T> = core::result::Result<T, Error>;
+pub type SJsonResult<T> = core::result::Result<T, Error>;
+pub type StdCow<'value, T> = alloc::borrow::Cow<'value, T>;
 
 #[cfg(feature = "known-key")]
 mod known_key;
@@ -160,7 +161,7 @@ impl Buffers {
 ///
 /// Will return `Err` if `s` is invalid JSON.
 #[cfg_attr(not(feature = "no-inline"), inline)]
-pub fn to_tape(s: &mut [u8]) -> Result<Tape<'_>> {
+pub fn to_tape(s: &mut [u8]) -> SJsonResult<Tape<'_>> {
     Deserializer::from_slice(s).map(Deserializer::into_tape)
 }
 
@@ -169,7 +170,7 @@ pub fn to_tape(s: &mut [u8]) -> Result<Tape<'_>> {
 ///
 /// Will return `Err` if `s` is invalid JSON.
 #[cfg_attr(not(feature = "no-inline"), inline)]
-pub fn to_tape_with_buffers<'de>(s: &'de mut [u8], buffers: &mut Buffers) -> Result<Tape<'de>> {
+pub fn to_tape_with_buffers<'de>(s: &'de mut [u8], buffers: &mut Buffers) -> SJsonResult<Tape<'de>> {
     Deserializer::from_slice_with_buffers(s, buffers).map(Deserializer::into_tape)
 }
 
@@ -178,7 +179,7 @@ pub fn to_tape_with_buffers<'de>(s: &'de mut [u8], buffers: &mut Buffers) -> Res
 ///
 /// Will return `Err` if `s` is invalid JSON.
 #[cfg_attr(not(feature = "no-inline"), inline)]
-pub fn fill_tape<'de>(s: &'de mut [u8], buffers: &mut Buffers, tape: &mut Tape<'de>) -> Result<()> {
+pub fn fill_tape<'de>(s: &'de mut [u8], buffers: &mut Buffers, tape: &mut Tape<'de>) -> SJsonResult<()> {
     tape.0.clear();
     Deserializer::fill_tape(s, buffers, &mut tape.0)
 }
@@ -523,7 +524,7 @@ impl<'de> Deserializer<'de> {
         data: &'invoke [u8],
         buffer: &'invoke mut [u8],
         idx: usize,
-    ) -> Result<&'de str>
+    ) -> SJsonResult<&'de str>
     where
         'de: 'invoke,
     {
@@ -850,7 +851,7 @@ impl<'de> Deserializer<'de> {
     /// # Errors
     ///
     /// Will return `Err` if `s` is invalid JSON.
-    pub fn from_slice(input: &'de mut [u8]) -> Result<Self> {
+    pub fn from_slice(input: &'de mut [u8]) -> SJsonResult<Self> {
         let len = input.len();
 
         let mut buffer = Buffers::new(len);
@@ -871,7 +872,7 @@ impl<'de> Deserializer<'de> {
         input: &'de mut [u8],
         buffer: &mut Buffers,
         tape: &mut Vec<Node<'de>>,
-    ) -> Result<()> {
+    ) -> SJsonResult<()> {
         const LOTS_OF_SPACES: [u8; SIMDINPUT_LENGTH] = [b' '; SIMDINPUT_LENGTH];
         let len = input.len();
         let simd_safe_len = len + SIMDINPUT_LENGTH;
@@ -928,7 +929,7 @@ impl<'de> Deserializer<'de> {
     /// # Errors
     ///
     /// Will return `Err` if `s` is invalid JSON.
-    pub fn from_slice_with_buffers(input: &'de mut [u8], buffer: &mut Buffers) -> Result<Self> {
+    pub fn from_slice_with_buffers(input: &'de mut [u8], buffer: &mut Buffers) -> SJsonResult<Self> {
         let mut tape: Vec<Node<'de>> = Vec::with_capacity(buffer.structural_indexes.len());
 
         Self::fill_tape(input, buffer, &mut tape)?;
