@@ -71,11 +71,11 @@ trait Generator: BaseGenerator {
             self.write_json(value)?;
 
             for (key, value) in iter {
-               self.write(b",")?;
-               self.new_line()?;
-               self.write_simple_string(key)?;
-               self.write_min(b": ", b':')?;
-               self.write_json(value)?;
+                self.write(b",")?;
+                self.new_line()?;
+                self.write_simple_string(key)?;
+                self.write_min(b": ", b':')?;
+                self.write_json(value)?;
             }
             self.dedent();
             self.new_line()?;

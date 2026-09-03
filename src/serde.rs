@@ -125,10 +125,8 @@ pub unsafe fn from_str_with_buffers<'a, T>(s: &'a mut str, buffers: &mut Buffers
 where
     T: Deserialize<'a>,
 {
-    let mut deserializer = Deserializer::from_slice_with_buffers(
-        unsafe { s.as_bytes_mut() },
-        buffers
-    )?;
+    let mut deserializer =
+        Deserializer::from_slice_with_buffers(unsafe { s.as_bytes_mut() }, buffers)?;
 
     T::deserialize(&mut deserializer)
 }
@@ -178,7 +176,7 @@ where
     if let Err(e) = rdr.read_to_end(&mut data) {
         return Err(Error::generic(ErrorType::Io(e)));
     }
-    let mut deserializer =  Deserializer::from_slice_with_buffers(&mut data, buffers)?;
+    let mut deserializer = Deserializer::from_slice_with_buffers(&mut data, buffers)?;
     T::deserialize(&mut deserializer)
 }
 

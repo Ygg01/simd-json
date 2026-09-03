@@ -363,7 +363,7 @@ impl<'se> serde::ser::SerializeMap for SerializeMap<'se> {
         T: ?Sized + Serialize,
     {
         self.next_key = Some(key.serialize(MapKeySerializer {
-            marker: PhantomData
+            marker: PhantomData,
         })?);
         Ok(())
     }

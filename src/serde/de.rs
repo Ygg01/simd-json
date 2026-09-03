@@ -120,7 +120,7 @@ where
     where
         V: Visitor<'de>,
     {
-        visitor.visit_i64( self.parse_i64()?)
+        visitor.visit_i64(self.parse_i64()?)
     }
 
     #[cfg_attr(not(feature = "no-inline"), inline)]
@@ -514,8 +514,7 @@ impl<'de> de::Deserializer<'de> for MapKey<'de, '_> {
             _ => Err(Deserializer::error(ErrorType::ExpectedString)),
         }
     }
-    
-    
+
     deserialize_integer_key!(deserialize_i8 => visit_i8; i8);
     deserialize_integer_key!(deserialize_i16 => visit_i16; i16);
     deserialize_integer_key!(deserialize_i32 => visit_i32; i32);

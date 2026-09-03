@@ -186,12 +186,12 @@ trait FastGenerator: BaseGenerator {
                         unreachable!("array is not empty but has no next");
                     };
 
-                   self.write(b"[")?;
-                   self.write_json(item)?;
+                    self.write(b"[")?;
+                    self.write_json(item)?;
 
                     for item in iter {
-                       self.write(b",")?;
-                       self.write_json(item)?;
+                        self.write(b",")?;
+                        self.write_json(item)?;
                     }
                     self.write(b"]")
                 }
